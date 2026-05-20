@@ -19,6 +19,15 @@ pipeline {
                 url: 'https://github.com/shubham-2143/Docker-compose'
             }
         }
+        stage('Java Version') {
+    steps {
+        sh '''
+        java -version
+        javac -version
+        echo $JAVA_HOME
+        '''
+    }
+}
 
         stage('Build Backend') {
             steps {
