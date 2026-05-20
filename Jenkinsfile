@@ -1,48 +1,27 @@
 pipeline {
     agent any
 
-    environment {
-        APP_DIR = "${WORKSPACE}"
-    }
-
     stages {
-
-        stage('Clean Workspace') {
-            steps {
-                cleanWs()
-            }
-        }
 
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/shubham-2143/Docker-compose'
+                url: 'https://github.com/shubham-2143/Docker-compose.git'
             }
         }
-        stage('Java Version') {
-    steps {
-        sh '''
-        java -version
-        javac -version
-        echo $JAVA_HOME
-        '''
-    }
-}
 
-        stage('Build Backend') {
+        stage('Check Java') {
             steps {
-                dir("${APP_DIR}/backend") {
-                    sh 'chmod +x mvnw || true'
-                    sh './mvnw clean package -DskipTests || mvn clean package -DskipTests'
-                }
+                sh '''
+                java -version
+                javac -version
+                '''
             }
         }
 
         stage('Stop Existing Containers') {
             steps {
-                sh '''
-                docker compose down || true
-                '''
+                sh 'docker compose down || true'
             }
         }
 
@@ -58,7 +37,7 @@ pipeline {
             }
         }
 
-        stage('Verify Deployment') {
+        stage('Verify Containers') {
             steps {
                 sh 'docker ps'
             }
@@ -68,6 +47,7 @@ pipeline {
             steps {
                 sh '''
                 sleep 20
+                curl http://localhost || true
                 curl http://localhost:8081/employees || true
                 '''
             }
@@ -76,11 +56,11 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful'
+            echo 'Deployment Successful!'
         }
 
         failure {
-            echo 'Deployment Failed'
+            echo 'Deployment Failed!'
         }
     }
 }
