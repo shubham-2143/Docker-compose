@@ -1,0 +1,106 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  min-height: 100vh;
+  padding: 50px;
+}
+
+.card {
+  max-width: 600px;
+  margin: auto;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.card h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 38px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+input {
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
+
+button {
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+.employee-section {
+  margin-top: 60px;
+}
+
+.employee-section h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 34px;
+}
+
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.employee-card {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  transition: 0.3s;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+}
+
+.employee-card h3 {
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.employee-card p {
+  color: #4b5563;
+  margin-bottom: 10px;
+}
+
+.employee-card span {
+  background: #2563eb;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+}
