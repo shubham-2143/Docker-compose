@@ -3,7 +3,7 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout Coded') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/shubham-2143/Docker-compose.git'
