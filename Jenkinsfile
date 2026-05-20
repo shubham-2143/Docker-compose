@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        APP_DIR = "/root/employee-management-app"
+        APP_DIR = "${WORKSPACE}"
     }
 
     stages {
@@ -16,21 +16,11 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/shubham-2143/Docker-compose.git'
+                url: 'https://github.com/shubham-2143/employee-management-app.git'
             }
         }
 
-        stage('Copy Project to Deployment Folder') {
-            steps {
-                sh '''
-                rm -rf ${APP_DIR}
-                mkdir -p ${APP_DIR}
-                cp -r * ${APP_DIR}
-                '''
-            }
-        }
-
-        stage('Build Spring Boot Backend') {
+        stage('Build Backend') {
             steps {
                 dir("${APP_DIR}/backend") {
                     sh 'chmod +x mvnw || true'
@@ -41,53 +31,34 @@ pipeline {
 
         stage('Stop Existing Containers') {
             steps {
-                dir("${APP_DIR}") {
-                    sh '''
-                    docker compose down || true
-                    docker rm -f $(docker ps -aq) || true
-                    '''
-                }
-            }
-        }
-
-        stage('Remove Old Images') {
-            steps {
                 sh '''
-                docker image prune -af || true
+                docker compose down || true
                 '''
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                dir("${APP_DIR}") {
-                    sh 'docker compose build --no-cache'
-                }
+                sh 'docker compose build --no-cache'
             }
         }
 
         stage('Deploy Application') {
             steps {
-                dir("${APP_DIR}") {
-                    sh 'docker compose up -d'
-                }
+                sh 'docker compose up -d'
             }
         }
 
-        stage('Verify Containers') {
+        stage('Verify Deployment') {
             steps {
-                sh '''
-                docker ps
-                '''
+                sh 'docker ps'
             }
         }
 
         stage('Health Check') {
             steps {
                 sh '''
-                sleep 30
-
-                curl -I http://localhost || true
+                sleep 20
                 curl http://localhost:8081/employees || true
                 '''
             }
@@ -95,17 +66,12 @@ pipeline {
     }
 
     post {
-
         success {
-            echo 'Application deployed successfully!'
+            echo 'Deployment Successful'
         }
 
         failure {
-            echo 'Deployment failed!'
-        }
-
-        always {
-            sh 'docker ps -a'
+            echo 'Deployment Failed'
         }
     }
 }
