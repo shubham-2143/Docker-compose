@@ -1,53 +1,83 @@
 pipeline {
     agent any
 
+    environment {
+        AWS_REGION = "us-east-1"
+        AWS_ACCOUNT_ID = "617632154705"
+
+        BACKEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/employee-backend"
+        FRONTEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/employee-frontend"
+    }
+
     stages {
 
-        stage('Checkout Coded') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main',
                 url: 'https://github.com/shubham-2143/Docker-compose.git'
             }
         }
 
-        stage('Check Java') {
+        stage('Verify Environment') {
             steps {
                 sh '''
-                java -version
-                javac -version
+                docker --version
+                aws --version
+                aws sts get-caller-identity
                 '''
             }
         }
 
-        stage('Stop Existing Containers') {
+        stage('Login to ECR') {
             steps {
-                sh 'docker compose down || true'
+                sh '''
+                aws ecr get-login-password --region ${AWS_REGION} | \
+                docker login --username AWS --password-stdin \
+                ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                '''
             }
         }
 
         stage('Build Docker Images') {
             steps {
-                sh 'docker compose build --no-cache'
+                sh '''
+                docker build -t employee-backend ./backend
+                docker build -t employee-frontend ./frontend
+                '''
             }
         }
 
-        stage('Deploy Application') {
-            steps {
-                sh 'docker compose up -d'
-            }
-        }
-
-        stage('Verify Containers') {
-            steps {
-                sh 'docker ps'
-            }
-        }
-
-        stage('Health Check') {
+        stage('Tag Docker Images') {
             steps {
                 sh '''
-                sleep 20
-                curl http://localhost || true
+                docker tag employee-backend:latest ${BACKEND_IMAGE}:latest
+                docker tag employee-frontend:latest ${FRONTEND_IMAGE}:latest
+                '''
+            }
+        }
+
+        stage('Push Images to ECR') {
+            steps {
+                sh '''
+                docker push ${BACKEND_IMAGE}:latest
+                docker push ${FRONTEND_IMAGE}:latest
+                '''
+            }
+        }
+
+        stage('Deploy Containers') {
+            steps {
+                sh '''
+                docker compose down || true
+                docker compose up -d
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                docker ps
                 curl http://localhost:8081/employees || true
                 '''
             }
@@ -56,11 +86,11 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment Successful!'
+            echo 'Build, ECR push and deployment successful!'
         }
 
         failure {
-            echo 'Deployment Failed!'
+            echo 'Pipeline failed!'
         }
     }
 }
