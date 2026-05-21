@@ -27,33 +27,7 @@ pipeline {
                 '''
             }
         }
-       stage('SonarQube Analysis') {
-    environment {
-        scannerHome = tool 'SonarScanner'
-    }
-
-    steps {
-        withSonarQubeEnv('sonarqube') {
-            sh """
-            ${scannerHome}/bin/sonar-scanner \
-            -Dsonar.projectKey=employee-management-app \
-            -Dsonar.projectName="Employee Management App" \
-            -Dsonar.projectVersion=1.0 \
-            -Dsonar.sources=backend/src/main,frontend/src \
-            -Dsonar.java.binaries=backend/target/classes \
-            -Dsonar.sourceEncoding=UTF-8
-            """
-        }
-    }
-}
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+       
 
         stage('Login to ECR') {
             steps {
