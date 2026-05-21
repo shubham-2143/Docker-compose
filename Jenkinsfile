@@ -21,13 +21,56 @@ pipeline {
         stage('Verify Environment') {
             steps {
                 sh '''
+                java -version
+                mvn -version
                 docker --version
                 aws --version
                 aws sts get-caller-identity
                 '''
             }
         }
-       
+
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh '''
+                    mvn clean compile
+
+                    echo "===== Verify Target ====="
+                    ls -R target || true
+                    ls -la target/classes || true
+                    '''
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                scannerHome = tool 'SonarScanner'
+            }
+
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh """
+                    ${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectKey=employee-management-app \
+                    -Dsonar.projectName="Employee Management App" \
+                    -Dsonar.projectVersion=1.0 \
+                    -Dsonar.sources=backend/src/main,frontend/src \
+                    -Dsonar.java.binaries=backend/target/classes \
+                    -Dsonar.sourceEncoding=UTF-8
+                    """
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
 
         stage('Login to ECR') {
             steps {
@@ -79,6 +122,8 @@ pipeline {
             steps {
                 sh '''
                 docker ps
+
+                echo "===== Backend Health ====="
                 curl http://localhost:8081/employees || true
                 '''
             }
@@ -86,8 +131,9 @@ pipeline {
     }
 
     post {
+
         success {
-            echo 'Build, ECR push and deployment successful!'
+            echo 'Application deployed successfully with SonarQube Quality Check!'
         }
 
         failure {
