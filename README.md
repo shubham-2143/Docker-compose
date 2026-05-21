@@ -315,20 +315,6 @@ Planned next phase of this project:
 
 ---
 
-# 📸 Screenshots
-
-<img width="1352" height="453" alt="image" src="https://github.com/user-attachments/assets/36ea49dc-64e2-4f7f-8d05-18f1c66409bd" />
-
-
-
-
-
-
-
-
-
----
-
 # Conclusion
 
 This project demonstrates the implementation of a fully automated DevOps CI/CD platform for a containerised full-stack application on AWS.
@@ -338,6 +324,10 @@ It combines CI/CD automation with Jenkins, code quality analysis using SonarQube
 The outcome is a scalable, repeatable, and reliable deployment workflow that reflects real-world DevOps engineering practices and production deployment patterns.
 
 ---
+#screenshots
+
+<img width="1352" height="453" alt="image" src="https://github.com/user-attachments/assets/f1b459a3-d899-4d5e-a904-0767b369087b" />
+
 
 # 👨‍💻 Author
 
