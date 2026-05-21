@@ -11,7 +11,7 @@ function App() {
     department: ''
   });
 
-  const API_URL = "http://3.82.10.231:8081/employees";
+  const API_URL = `${window.location.protocol}//${window.location.hostname}:8081/employees`;
 
   useEffect(() => {
     fetchEmployees();
