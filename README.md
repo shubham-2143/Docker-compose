@@ -23,25 +23,7 @@
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/7a96f0a5-5a3e-4e04-a817-28db2efa7295" />
 
 
-GitHub
-   │
-   ▼
-Jenkins CI/CD Pipeline
-   │
-   ├── SonarQube Analysis
-   ├── Quality Gate
-   ├── Docker Build
-   ├── Amazon ECR Push
-   └── Automated Deployment
-               │
-               ▼
-           AWS EC2
-               │
-     ┌─────────┼─────────┐
-     │         │         │
-     ▼         ▼         ▼
- Frontend   Backend    MySQL
-  React   Spring Boot  Database
+
 
 ---
 
