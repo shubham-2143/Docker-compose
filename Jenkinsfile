@@ -7,9 +7,22 @@ pipeline {
 
         BACKEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/employee-backend"
         FRONTEND_IMAGE = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/employee-frontend"
+
+        JAVA_HOME = "/usr/lib/jvm/java-21-amazon-corretto.x86_64"
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
+
+        stage('Cleanup Old Cache') {
+            steps {
+                sh '''
+                docker image prune -af || true
+                docker builder prune -af || true
+                rm -rf /var/lib/jenkins/.m2/repository/*.lastUpdated || true
+                '''
+            }
+        }
 
         stage('Checkout Code') {
             steps {
@@ -21,31 +34,27 @@ pipeline {
         stage('Verify Environment') {
             steps {
                 sh '''
+                echo "===== JAVA ====="
                 java -version
+                javac -version
+                echo $JAVA_HOME
+
+                echo "===== MAVEN ====="
                 mvn -version
+
+                echo "===== DOCKER ====="
                 docker --version
+                docker compose version
+
+                echo "===== AWS ====="
                 aws --version
                 aws sts get-caller-identity
+
+                echo "===== DISK ====="
+                df -h
                 '''
             }
         }
-
-       stage('Build Backend') {
-    steps {
-        dir('backend') {
-            sh '''
-            export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
-            export PATH=$JAVA_HOME/bin:$PATH
-
-            java -version
-            javac -version
-            mvn -version
-
-            mvn clean compile -U
-            '''
-        }
-    }
-}
 
         stage('SonarQube Analysis') {
             environment {
@@ -53,6 +62,21 @@ pipeline {
             }
 
             steps {
+
+                dir('backend') {
+                    sh '''
+                    export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+                    export PATH=$JAVA_HOME/bin:$PATH
+
+                    echo "===== BUILD FOR SONAR ====="
+                    mvn clean compile -U -DskipTests
+
+                    echo "===== VERIFY TARGET ====="
+                    ls -R target || true
+                    ls -la target/classes || true
+                    '''
+                }
+
                 withSonarQubeEnv('sonarqube') {
                     sh """
                     ${scannerHome}/bin/sonar-scanner \
@@ -75,6 +99,20 @@ pipeline {
             }
         }
 
+        stage('Build Backend') {
+            steps {
+                dir('backend') {
+                    sh '''
+                    export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+                    export PATH=$JAVA_HOME/bin:$PATH
+
+                    echo "===== PACKAGE BACKEND ====="
+                    mvn clean package -DskipTests
+                    '''
+                }
+            }
+        }
+
         stage('Login to ECR') {
             steps {
                 sh '''
@@ -88,7 +126,10 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 sh '''
+                echo "===== BUILD BACKEND IMAGE ====="
                 docker build -t employee-backend ./backend
+
+                echo "===== BUILD FRONTEND IMAGE ====="
                 docker build -t employee-frontend ./frontend
                 '''
             }
@@ -124,9 +165,11 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sh '''
+                echo "===== RUNNING CONTAINERS ====="
                 docker ps
 
-                echo "===== Backend Health ====="
+                echo "===== BACKEND API TEST ====="
+                sleep 20
                 curl http://localhost:8081/employees || true
                 '''
             }
@@ -136,11 +179,17 @@ pipeline {
     post {
 
         success {
-            echo 'Application deployed successfully with SonarQube Quality Check!'
+            echo 'Pipeline completed successfully!'
         }
 
         failure {
             echo 'Pipeline failed!'
+        }
+
+        always {
+            sh '''
+            docker image prune -af || true
+            '''
         }
     }
 }
