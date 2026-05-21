@@ -3,7 +3,6 @@
 ## Contents
 
 - Architecture Diagram
-- Project Demo
 - Tech Stack
 - Project Overview
 - Application Containerisation
@@ -21,9 +20,9 @@
 
 # 🏗️ Architecture Diagram
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/7a96f0a5-5a3e-4e04-a817-28db2efa7295" />
 
 
-```text
 GitHub
    │
    ▼
@@ -43,13 +42,6 @@ Jenkins CI/CD Pipeline
      ▼         ▼         ▼
  Frontend   Backend    MySQL
   React   Spring Boot  Database
-```
-
----
-
-# 🎥 Project Demo
-
-> Add Loom / YouTube Demo Link Here
 
 ---
 
@@ -152,38 +144,23 @@ This established a secure and repeatable deployment environment.
 
 # Step 3 – CI/CD Pipeline with Jenkins
 
-A production-style Jenkins pipeline was implemented to automate build and deployment activities.
+A production-style CI/CD pipeline was implemented using Jenkins to automate the application delivery process.
 
-The pipeline was integrated with GitHub using webhooks to automatically trigger builds on code changes.
+The pipeline is integrated with GitHub webhooks and automatically triggers on code changes.
 
-The CI/CD workflow includes:
+The workflow includes:
 
-### Source Code Checkout
-Jenkins automatically fetches the latest application code from GitHub.
+- **Code Checkout** from GitHub  
+- **Environment Verification** to validate required tools and dependencies  
+- **Backend Build** using Maven for Spring Boot application packaging  
+- **SonarQube Analysis** for static code quality checks  
+- **Quality Gate Validation** to ensure only approved code progresses  
+- **Docker Image Build** for frontend and backend services  
+- **Amazon ECR Push** for centralized image storage  
+- **Automated Deployment** on AWS EC2 using Docker Compose  
+- **Health Validation** to verify successful deployment
 
-### Environment Validation
-Build environment dependencies are validated before execution.
-
-### Backend Build
-Spring Boot application is compiled and packaged using Maven.
-
-### Frontend Build
-React frontend is validated and built before containerisation.
-
-### Docker Image Build
-Docker images are created for both frontend and backend services.
-
-### Image Push to Amazon ECR
-Built images are automatically pushed into Amazon ECR repositories.
-
-### Automated Deployment
-Docker Compose automatically deploys updated containers on EC2.
-
-### Post Deployment Verification
-Health validation confirms successful deployment.
-
-This removed manual deployment effort and established continuous delivery.
-
+**This implementation established a fully automated workflow from **code commit to deployment**, reducing manual effort and improving deployment consistency.**
 ---
 
 # Step 4 – SonarQube Code Quality Analysis
@@ -322,23 +299,6 @@ Docker Compose Deployment
       │
       ▼
 Application Health Validation
-```
-
----
-
-# 🌐 Application Access
-
-### Frontend
-
-```text
-http://<EC2-PUBLIC-IP>
-```
-
-### Backend API
-
-```text
-http://<EC2-PUBLIC-IP>:8081/employees
-```
 
 ---
 
