@@ -317,7 +317,14 @@ Planned next phase of this project:
 
 # 📸 Screenshots
 
-<img width="1352" height="453" alt="image" src="https://github.com/user-attachments/assets/de164f89-1201-4f03-81fe-afb5d9c151a1" />
+<img width="1352" height="453" alt="image" src="https://github.com/user-attachments/assets/36ea49dc-64e2-4f7f-8d05-18f1c66409bd" />
+
+
+
+
+
+
+
 
 
 ---
