@@ -307,8 +307,3 @@ The outcome is a scalable, repeatable, and reliable deployment workflow that ref
 
 ---
 
-# 👨‍💻 Author
-
-### Shubham Sontakke
-
-**DevOps Engineer | AWS | Docker | Jenkins | Kubernetes | Terraform | CI/CD**
