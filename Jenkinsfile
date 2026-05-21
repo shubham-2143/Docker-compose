@@ -30,19 +30,22 @@ pipeline {
             }
         }
 
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    sh '''
-                    mvn clean compile
+       stage('Build Backend') {
+    steps {
+        dir('backend') {
+            sh '''
+            export JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto.x86_64
+            export PATH=$JAVA_HOME/bin:$PATH
 
-                    echo "===== Verify Target ====="
-                    ls -R target || true
-                    ls -la target/classes || true
-                    '''
-                }
-            }
+            java -version
+            javac -version
+            mvn -version
+
+            mvn clean compile -U
+            '''
         }
+    }
+}
 
         stage('SonarQube Analysis') {
             environment {
