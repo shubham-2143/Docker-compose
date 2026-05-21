@@ -22,6 +22,9 @@
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/7a96f0a5-5a3e-4e04-a817-28db2efa7295" />
 
+<img width="1352" height="453" alt="image" src="https://github.com/user-attachments/assets/266798c6-c370-4677-8201-6f2b57a757d3" />
+
+
 
 GitHub
    │
@@ -324,9 +327,6 @@ It combines CI/CD automation with Jenkins, code quality analysis using SonarQube
 The outcome is a scalable, repeatable, and reliable deployment workflow that reflects real-world DevOps engineering practices and production deployment patterns.
 
 ---
-
-<img width="624" height="209" alt="image" src="https://github.com/user-attachments/assets/c1131fe2-36a4-4135-8375-ac7670a2c741" />
-
 
 # 👨‍💻 Author
 
